@@ -399,7 +399,7 @@ contract TokenPool is Ownable {
     }
 }
 
-// File: contracts/TokenGeyser.sol
+// File: contracts/Tokenliquidity.sol
 
 pragma solidity 0.5.0;
 
@@ -409,7 +409,7 @@ pragma solidity 0.5.0;
 
 
 /**
- * @title Token Geyser
+ * @title Token liquidity
  * @dev A smart-contract based mechanism to distribute tokens over time, inspired loosely by
  *      Compound and Uniswap.
  *
@@ -426,7 +426,7 @@ pragma solidity 0.5.0;
  *      More background and motivation available at:
  *      https://github.com/ampleforth/RFCs/blob/master/RFCs/rfc-1.md
  */
-contract TokenGeyser is IStaking, Ownable {
+contract Tokenliquidity is IStaking, Ownable {
     using SafeMath for uint256;
 
     event Staked(address indexed user, uint256 amount, uint256 total, bytes data);
@@ -505,11 +505,11 @@ contract TokenGeyser is IStaking, Ownable {
     constructor(IERC20 stakingToken, IERC20 distributionToken, uint256 maxUnlockSchedules,
                 uint256 startBonus_, uint256 bonusPeriodSec_, uint256 initialSharesPerToken) public {
         // The start bonus must be some fraction of the max. (i.e. <= 100%)
-        require(startBonus_ <= 10**BONUS_DECIMALS, 'TokenGeyser: start bonus too high');
+        require(startBonus_ <= 10**BONUS_DECIMALS, 'Tokenliquidity: start bonus too high');
         // If no period is desired, instead set startBonus = 100%
         // and bonusPeriod to a small value like 1sec.
-        require(bonusPeriodSec_ != 0, 'TokenGeyser: bonus period is zero');
-        require(initialSharesPerToken > 0, 'TokenGeyser: initialSharesPerToken is zero');
+        require(bonusPeriodSec_ != 0, 'Tokenliquidity: bonus period is zero');
+        require(initialSharesPerToken > 0, 'Tokenliquidity: initialSharesPerToken is zero');
 
         _stakingPool = new TokenPool(stakingToken);
         _unlockedPool = new TokenPool(distributionToken);
@@ -561,15 +561,15 @@ contract TokenGeyser is IStaking, Ownable {
      * @param amount Number of deposit tokens to stake.
      */
     function _stakeFor(address staker, address beneficiary, uint256 amount) private {
-        require(amount > 0, 'TokenGeyser: stake amount is zero');
-        require(beneficiary != address(0), 'TokenGeyser: beneficiary is zero address');
+        require(amount > 0, 'Tokenliquidity: stake amount is zero');
+        require(beneficiary != address(0), 'Tokenliquidity: beneficiary is zero address');
         require(totalStakingShares == 0 || totalStaked() > 0,
-                'TokenGeyser: Invalid state. Staking shares exist, but no staking tokens do');
+                'Tokenliquidity: Invalid state. Staking shares exist, but no staking tokens do');
 
         uint256 mintedStakingShares = (totalStakingShares > 0)
             ? totalStakingShares.mul(amount).div(totalStaked())
             : amount.mul(_initialSharesPerToken);
-        require(mintedStakingShares > 0, 'TokenGeyser: Stake amount is too small');
+        require(mintedStakingShares > 0, 'Tokenliquidity: Stake amount is too small');
 
         updateAccounting();
 
@@ -588,7 +588,7 @@ contract TokenGeyser is IStaking, Ownable {
 
         // interactions
         require(_stakingPool.token().transferFrom(staker, address(_stakingPool), amount),
-            'TokenGeyser: transfer into staking pool failed');
+            'Tokenliquidity: transfer into staking pool failed');
 
         emit Staked(beneficiary, amount, totalStakedFor(beneficiary), "");
     }
@@ -621,11 +621,11 @@ contract TokenGeyser is IStaking, Ownable {
         updateAccounting();
 
         // checks
-        require(amount > 0, 'TokenGeyser: unstake amount is zero');
+        require(amount > 0, 'Tokenliquidity: unstake amount is zero');
         require(totalStakedFor(msg.sender) >= amount,
-            'TokenGeyser: unstake amount is greater than total user stakes');
+            'Tokenliquidity: unstake amount is greater than total user stakes');
         uint256 stakingSharesToBurn = totalStakingShares.mul(amount).div(totalStaked());
-        require(stakingSharesToBurn > 0, 'TokenGeyser: Unable to unstake amount this small');
+        require(stakingSharesToBurn > 0, 'Tokenliquidity: Unable to unstake amount this small');
 
         // 1. User Accounting
         UserTotals storage totals = _userTotals[msg.sender];
@@ -668,15 +668,15 @@ contract TokenGeyser is IStaking, Ownable {
 
         // interactions
         require(_stakingPool.transfer(msg.sender, amount),
-            'TokenGeyser: transfer out of staking pool failed');
+            'Tokenliquidity: transfer out of staking pool failed');
         require(_unlockedPool.transfer(msg.sender, rewardAmount),
-            'TokenGeyser: transfer out of unlocked pool failed');
+            'Tokenliquidity: transfer out of unlocked pool failed');
 
         emit Unstaked(msg.sender, amount, totalStakedFor(msg.sender), "");
         emit TokensClaimed(msg.sender, rewardAmount);
 
         require(totalStakingShares == 0 || totalStaked() > 0,
-                "TokenGeyser: Error unstaking. Staking shares exist, but no staking tokens do");
+                "Tokenliquidity: Error unstaking. Staking shares exist, but no staking tokens do");
         return rewardAmount;
     }
 
@@ -819,7 +819,7 @@ contract TokenGeyser is IStaking, Ownable {
      */
     function lockTokens(uint256 amount, uint256 durationSec) external onlyOwner {
         require(unlockSchedules.length < _maxUnlockSchedules,
-            'TokenGeyser: reached maximum unlock schedules');
+            'Tokenliquidity: reached maximum unlock schedules');
 
         // Update lockedTokens amount before using it in computations after.
         updateAccounting();
@@ -839,7 +839,7 @@ contract TokenGeyser is IStaking, Ownable {
         totalLockedShares = totalLockedShares.add(mintedLockedShares);
 
         require(_lockedPool.token().transferFrom(msg.sender, address(_lockedPool), amount),
-            'TokenGeyser: transfer into locked pool failed');
+            'Tokenliquidity: transfer into locked pool failed');
         emit TokensLocked(amount, durationSec, totalLocked());
     }
 
@@ -865,7 +865,7 @@ contract TokenGeyser is IStaking, Ownable {
 
         if (unlockedTokens > 0) {
             require(_lockedPool.transfer(address(_unlockedPool), unlockedTokens),
-                'TokenGeyser: transfer out of locked pool failed');
+                'Tokenliquidity: transfer out of locked pool failed');
             emit TokensUnlocked(unlockedTokens, totalLocked());
         }
 

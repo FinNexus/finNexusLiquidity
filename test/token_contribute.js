@@ -11,7 +11,7 @@ const {
 } = _require('/test/helper');
 
 const AmpleforthErc20 = contract.fromArtifact('UFragments');
-const TokenGeyser = contract.fromArtifact('TokenGeyser');
+const Tokenliquidity = contract.fromArtifact('Tokenliquidity');
 const InitialSharesPerToken = 20000;
 
 let ampl, dist, owner, anotherAccount;
@@ -27,7 +27,7 @@ describe('contributeTokens', function () {
 
     const startBonus = 0;
     const bonusPeriod = 60 * 60 * 24 * 30;
-    dist = await TokenGeyser.new(ampl.address, ampl.address,  startBonus, bonusPeriod,
+    dist = await Tokenliquidity.new(ampl.address, ampl.address,  startBonus, bonusPeriod,
       InitialSharesPerToken);
   });
   describe('contributeTokens', function () {

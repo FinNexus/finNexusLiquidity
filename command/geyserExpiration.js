@@ -1,12 +1,12 @@
 let Web3 = require("Web3")
 const fs = require('fs');
 let web3 = new Web3(new Web3.providers.HttpProvider("https://demodex.wandevs.org:48545"));
-let TokenGeyser = require("../build/contracts/TokenGeyser.json");
+let Tokenliquidity = require("../build/contracts/Tokenliquidity.json");
 let FNXCoin = require("../build/contracts/FNXCoin.json");
 let UniCoin = require("../build/contracts/UniCoin.json");
 async function expirationTest(){
 
-    let geyser = await new web3.eth.Contract(TokenGeyser.abi,"0x874091F169983C375DDF067b5ec0CE446855b55d");  
+    let liquidity = await new web3.eth.Contract(Tokenliquidity.abi,"0x874091F169983C375DDF067b5ec0CE446855b55d");  
     let result = await priceDB.methods.getPrice("BTC").call();
     console.log("BTC :",result.toString(10));
     result = await priceDB.methods.getPrice("ETH").call();

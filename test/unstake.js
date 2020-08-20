@@ -13,7 +13,7 @@ const {
 } = _require('/test/helper');
 
 const AmpleforthErc20 = contract.fromArtifact('UFragments');
-const TokenGeyser = contract.fromArtifact('TokenGeyser');
+const Tokenliquidity = contract.fromArtifact('Tokenliquidity');
 const InitialSharesPerToken = 20000;
 
 const ONE_YEAR = 1 * 365 * 24 * 3600;
@@ -30,7 +30,7 @@ async function setupContractAndAccounts () {
 
   const startBonus = 0; // 50%
   const bonusPeriod = 86400; // 1 Day
-  dist = await TokenGeyser.new(ampl.address, ampl.address, startBonus, bonusPeriod, InitialSharesPerToken
+  dist = await Tokenliquidity.new(ampl.address, ampl.address, startBonus, bonusPeriod, InitialSharesPerToken
   );
   expect(await dist.bonusPeriodSec.call()).to.be.bignumber.equal(new BN(bonusPeriod));
   await ampl.transfer(anotherAccount, $AMPL(50000));
@@ -56,7 +56,7 @@ describe('unstaking', function () {
         await dist.stake($AMPL(50), [], { from: anotherAccount });
         await expectRevert(
           dist.unstake($AMPL(0), [], { from: anotherAccount }),
-          'TokenGeyser: unstake amount is zero'
+          'Tokenliquidity: unstake amount is zero'
         );
       });
     });
@@ -70,7 +70,7 @@ describe('unstaking', function () {
         await invokeRebase(ampl, +50);
         await expectRevert(
           dist.unstake($AMPL(85), [], { from: anotherAccount }),
-          'TokenGeyser: unstake amount is greater than total user stakes'
+          'Tokenliquidity: unstake amount is greater than total user stakes'
         );
       });
       it('should NOT fail if user tries to unstake his balance', async function () {
@@ -81,7 +81,7 @@ describe('unstaking', function () {
         await invokeRebase(ampl, 100 * InitialSharesPerToken);
         await expectRevert(
           dist.unstake(1, [], { from: anotherAccount }),
-          'TokenGeyser: Unable to unstake amount this small'
+          'Tokenliquidity: Unable to unstake amount this small'
         );
       });
     });
@@ -95,7 +95,7 @@ describe('unstaking', function () {
         await invokeRebase(ampl, -50);
         await expectRevert(
           dist.unstake($AMPL(50), [], { from: anotherAccount }),
-          'TokenGeyser: unstake amount is greater than total user stakes'
+          'Tokenliquidity: unstake amount is greater than total user stakes'
         );
       });
       it('should NOT fail if user tries to unstake his balance', async function () {

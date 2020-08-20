@@ -1,5 +1,5 @@
 {
-  "name": "token-geyser",
+  "name": "token-liquidity",
   "version": "0.0.1",
   "description": "A smart-contract based mechanism to distribute tokens over time, inspired loosely by Compound and Uniswap.",
   "keywords": [

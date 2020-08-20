@@ -11,7 +11,7 @@ const {
 } = _require('/test/helper');
 
 const AmpleforthErc20 = contract.fromArtifact('UFragments');
-const TokenGeyser = contract.fromArtifact('TokenGeyser');
+const Tokenliquidity = contract.fromArtifact('Tokenliquidity');
 const InitialSharesPerToken = 10 ** 6;
 
 let ampl, dist, owner, anotherAccount;
@@ -27,21 +27,21 @@ describe('staking', function () {
 
     const startBonus = 0;
     const bonusPeriod = 60 * 60 * 24 * 30;
-    dist = await TokenGeyser.new(ampl.address, ampl.address, startBonus, bonusPeriod,
+    dist = await Tokenliquidity.new(ampl.address, ampl.address, startBonus, bonusPeriod,
       InitialSharesPerToken);
   });
 
   describe('when start bonus too high', function () {
     it('should fail to construct', async function () {
-      await expectRevert(TokenGeyser.new(ampl.address, ampl.address, 101, 86400, InitialSharesPerToken),
-        'TokenGeyser: start bonus too high');
+      await expectRevert(Tokenliquidity.new(ampl.address, ampl.address, 101, 86400, InitialSharesPerToken),
+        'Tokenliquidity: start bonus too high');
     });
   });
 
   describe('when bonus period is 0', function () {
     it('should fail to construct', async function () {
-      await expectRevert(TokenGeyser.new(ampl.address, ampl.address, 50, 0, InitialSharesPerToken),
-        'TokenGeyser: bonus period is zero');
+      await expectRevert(Tokenliquidity.new(ampl.address, ampl.address, 50, 0, InitialSharesPerToken),
+        'Tokenliquidity: bonus period is zero');
     });
   });
 
@@ -144,7 +144,7 @@ describe('staking', function () {
         await invokeRebase(ampl, 100 * InitialSharesPerToken);
         await expectRevert(
           dist.stake(1, []),
-          'TokenGeyser: Stake amount is too small'
+          'Tokenliquidity: Stake amount is too small'
         );
       });
     });
@@ -177,7 +177,7 @@ describe('staking', function () {
     describe('when the beneficiary is ZERO_ADDRESS', function () {
       it('should fail', async function () {
         await expectRevert(dist.stakeFor(constants.ZERO_ADDRESS, $AMPL(100), []),
-          'TokenGeyser: beneficiary is zero address');
+          'Tokenliquidity: beneficiary is zero address');
       });
     });
 
