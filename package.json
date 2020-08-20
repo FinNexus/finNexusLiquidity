@@ -19,8 +19,12 @@
   "author": "dev-support@ampleforth.org",
   "scripts": {
   },
-
   "dependencies": {
+    "app-root-path": "~2.1.0",
+    "frg-ethereum-runners": "https://github.com/ampleforth/frg-ethereum-runners.git#v1.0.1",
+    "openzeppelin-solidity": "2.4.0",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "uFragments": "https://github.com/ampleforth/uFragments.git#v1.0.0"
   },
   "devDependencies": {
     "@openzeppelin/cli": "^2.6.0",
